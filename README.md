@@ -56,7 +56,7 @@ http://localhost
 Make sure [git](https://git-scm.com/), [XAMPP  (version 8 or above)](https://www.apachefriends.org/download.html), [Composer](https://getcomposer.org/download/), and [Node.js](https://nodejs.org/en/download/) is installed before starting.
 #### 0. Clone the repository
 ```
-git clone git clone git@github.com:yasirsoleh/vtms-backend.git
+git clone git@github.com:yasirsoleh/vtms-backend.git
 ```
 #### 1. Make sure to be inside the directory
 ```
