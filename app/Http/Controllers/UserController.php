@@ -9,6 +9,23 @@ use App\Models\User;
 
 class UserController extends Controller
 {
+    /**
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function index(Request $request)
+    {
+        if (!$request->user()->admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        $users = User::all();
+        return response($users);
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -44,10 +61,12 @@ class UserController extends Controller
                 'message' => 'Bad credentials'
             ]);
         }
+        $user->tokens()->delete();
 
         $token = $user->createToken('access-token')->plainTextToken;
 
         return response([
+            'user' => $user,
             'token' => $token
         ]);
     }
@@ -58,6 +77,21 @@ class UserController extends Controller
 
         return response([
             'message' => 'Logged Out'
+        ]);
+    }
+
+    public function change_password(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|confirmed'
+        ]);
+
+        $user = $request->user();
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return response([
+            'message' => 'Password Changed'
         ]);
     }
 }

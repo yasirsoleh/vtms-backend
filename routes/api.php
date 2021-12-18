@@ -3,7 +3,6 @@
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\DetectionController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,11 +15,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 //authenticated route
 Route::middleware(['auth:sanctum'])->group(function () {
     //Cameras
@@ -39,15 +33,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/detections/search/{plate_number}', [DetectionController::class, 'search_plate_number']);
 
     //User
+    Route::post('/user/change_password', [UserController::class, 'change_password']);
     Route::get('/user/logout',[UserController::class, 'logout']);
+    Route::get('/users',[UserController::class, 'index']);
 });
 
 //User-not authenticated
 Route::post('/user/register',[UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
-
-
-// Route::resources([
-//     'cameras' => CameraController::class,
-//     'detections' => DetectionController::class,
-// ]);
