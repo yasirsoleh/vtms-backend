@@ -56,8 +56,8 @@ class UserController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return [
+        return response([
             'message' => 'Logged Out'
-        ];
+        ]);
     }
 }
