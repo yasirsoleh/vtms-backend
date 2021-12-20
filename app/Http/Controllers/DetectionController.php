@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Detection;
 use App\Models\Camera;
 use Illuminate\Http\Request;
+use App\Events\NewDetections;
 
 class DetectionController extends Controller
 {
@@ -42,6 +43,8 @@ class DetectionController extends Controller
         ]);
 
         $detection = Detection::create($request->all());
+
+        event(new NewDetections($detection));
 
         return $detection;
     }

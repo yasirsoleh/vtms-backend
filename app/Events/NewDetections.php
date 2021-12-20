@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
+use App\Models\Detection;
 
 class NewDetections implements ShouldBroadcastNow
 {
@@ -22,9 +22,9 @@ class NewDetections implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(Detection $detection)
     {
-        $this->user = $user;
+        $this->detection = $detection;
     }
 
     /**
