@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewDetections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -40,9 +41,12 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
+        event(new NewDetections($user));
+
         $token = $user->createToken('access-token')->plainTextToken;
 
         return response([
+            'user' => $user,
             'token' => $token
         ]);
     }
