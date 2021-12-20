@@ -9,7 +9,7 @@ git clone git@github.com:yasirsoleh/vtms_backend.git
 ```
 #### 1. Make sure to be inside the directory
 ```
-cd vtms-backend
+cd vtms_backend
 ```
 #### 2. Composer install using docker to prepare vendor folder
 ```
@@ -60,7 +60,7 @@ git clone git@github.com:yasirsoleh/vtms_backend.git
 ```
 #### 1. Make sure to be inside the directory
 ```
-cd vtms-backend
+cd vtms_backend
 ```
 #### 2. Composer install dependencies
 ```
