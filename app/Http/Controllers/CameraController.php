@@ -38,7 +38,6 @@ class CameraController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'mqtt_topic' => 'required|unique:cameras|max:30',
             'traffic_direction' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
@@ -46,12 +45,11 @@ class CameraController extends Controller
 
         $camera = Camera::create($request->all());
 
-        $token = $camera->createToken('camera-access-token')->plainTextToken;
+        $token = $camera->createToken('camera-access-token', ['camera'])->plainTextToken;
+        $camera->plain_text_token = $token;
+        $camera->save();
 
-        return response([
-            'user' => $camera,
-            'token' => $token
-        ]);
+        return response($camera);
 
         // return $camera;
     }
@@ -64,7 +62,8 @@ class CameraController extends Controller
      */
     public function show($id)
     {
-        return Camera::find($id);
+        $camera = Camera::find($id);
+        return response($camera);
     }
 
     /**
@@ -91,7 +90,7 @@ class CameraController extends Controller
 
         $request->validate([
             'name' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:255'],
-            'mqtt_topic' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:30'],
+            //'mqtt_topic' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:30'],
             'traffic_direction' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',

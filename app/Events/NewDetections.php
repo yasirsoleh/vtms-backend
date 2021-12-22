@@ -15,7 +15,7 @@ class NewDetections implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
+    public $detection;
 
     /**
      * Create a new event instance.
@@ -34,11 +34,11 @@ class NewDetections implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('my-channel');
+        return new Channel('detection');
     }
 
     public function broadcastAs()
     {
-        return 'my-event';
+        return 'new-detections';
     }
 }

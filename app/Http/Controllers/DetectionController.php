@@ -37,25 +37,20 @@ class DetectionController extends Controller
      */
     public function store(Request $request)
     {
+        $camera = $request->user();
         $request->validate([
-            'camera_id' => 'exists:App\Models\Camera,id',
+            //'camera_id' => 'exists:App\Models\Camera,id',
             'plate_number' => 'required|string',
         ]);
 
-        $detection = Detection::create($request->all());
+        $detection = Detection::create([
+            'camera_id' => $camera->id,
+            'plate_number' => $request->plate_number,
+        ]);
 
         event(new NewDetections($detection));
 
         return $detection;
-    }
-
-    public function store_from_mqtt($mqtt_topic, $data)
-    {
-        $camera = Camera::firstWhere('mqtt_topic', $mqtt_topic);
-        $detection = Detection::create([
-            'camera_id' => $camera->id,
-            'plate_number' => $data->plate_number,
-        ]);
     }
 
     /**

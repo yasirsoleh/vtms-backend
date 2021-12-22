@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //authenticated route
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     //Cameras
     Route::get('/cameras', [CameraController::class, 'index']);
     Route::post('/cameras', [CameraController::class, 'store']);
@@ -27,7 +27,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //Detections
     Route::get('/detections', [DetectionController::class, 'index']);
-    Route::post('/detections', [DetectionController::class, 'store']);
     Route::get('/detections/{detection}', [DetectionController::class, 'show']);
     Route::delete('/detections/{detection}', [DetectionController::class, 'destroy']);
     Route::get('/detections/search/{plate_number}', [DetectionController::class, 'search_plate_number']);
@@ -37,6 +36,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user/logout',[UserController::class, 'logout']);
     Route::get('/users',[UserController::class, 'index']);
 });
+
+Route::middleware(['auth:sanctum', 'abilities:camera'])->group(function () {
+    Route::post('/detections', [DetectionController::class, 'store']);
+});
+
 
 //User-not authenticated
 Route::post('/user/register',[UserController::class, 'register']);

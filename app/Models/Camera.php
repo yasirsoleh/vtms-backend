@@ -13,7 +13,7 @@ class Camera extends Model
     protected $fillable = [
         'name',
         'mqtt_topic',
-        'traffic_direction',
+        'plain_text_token',
         'latitude',
         'longitude',
     ];

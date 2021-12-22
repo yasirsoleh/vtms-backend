@@ -40,7 +40,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        $token = $user->createToken('access-token')->plainTextToken;
+        $token = $user->createToken('access-token', ['user'])->plainTextToken;
 
         return response([
             'user' => $user,
@@ -64,7 +64,7 @@ class UserController extends Controller
         }
         $user->tokens()->delete();
 
-        $token = $user->createToken('access-token')->plainTextToken;
+        $token = $user->createToken('access-token', ['user'])->plainTextToken;
 
         return response([
             'user' => $user,
@@ -104,9 +104,13 @@ class UserController extends Controller
             $request->only('email')
         );
 
-        return $status === Password::RESET_LINK_SENT
+        $status === Password::RESET_LINK_SENT
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
+
+        return response([
+            'status' => $status
+        ]);
     }
 
     public function reset_password_form($token)
