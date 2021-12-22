@@ -41,3 +41,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //User-not authenticated
 Route::post('/user/register',[UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
+
+//Reset Password
+Route::post('/forgot-password', [UserController::class, 'forgot_password']);

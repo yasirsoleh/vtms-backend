@@ -46,7 +46,14 @@ class CameraController extends Controller
 
         $camera = Camera::create($request->all());
 
-        return $camera;
+        $token = $camera->createToken('camera-access-token')->plainTextToken;
+
+        return response([
+            'user' => $camera,
+            'token' => $token
+        ]);
+
+        // return $camera;
     }
 
     /**
