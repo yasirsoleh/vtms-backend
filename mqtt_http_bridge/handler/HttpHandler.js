@@ -9,7 +9,7 @@ const options = {
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': ''
     }
-};
+}
 
 function post_detections(payload) {
     const {token, plate_number} = JSON.parse(payload.toString());
@@ -20,14 +20,14 @@ function post_detections(payload) {
     });
 
     const req = http.request(options, res => {
-        console.log(`statusCode: ${res.statusCode}`)
+        console.log(`statusCode: ${res.statusCode}`);
         res.on('data', d => {
-            process.stdout.write(d)
-        })
+            process.stdout.write(d);
+        });
     });
-    module.exports = {}
+
     req.on('error', error => {
-        console.error(error)
+        console.error(error);
     });
 
     req.write(data);
