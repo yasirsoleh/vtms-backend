@@ -21,7 +21,3 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('welcome');
 })->name('login');
-
-Route::get('/reset-password/{token}', [UserController::class, 'reset_password_form'])->middleware('guest')->name('password.reset');
-
-Route::post('/reset-password', [UserController::class, 'reset_password'])->middleware('guest')->name('password.update');

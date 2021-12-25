@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
@@ -16,46 +17,18 @@ class UserController extends Controller
     */
     public function index(Request $request)
     {
-        if (!$request->user()->admin) {
-            return response([
-                'message' => 'Not Admin'
-            ], 403);
-        }
-
-        $users = User::all();
-        return response($users);
-    }
-
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|confirmed'
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        $token = $user->createToken('access-token', ['user'])->plainTextToken;
-
-        return response([
-            'user' => $user,
-            'token' => $token
-        ]);
+        $user = $request->user();
+        return response($user);
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|max:255',
             'password' => 'required|string'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('username', $request->username)->first();
 
         if (!$user || !Hash::check($request->password, $user->password) ) {
             return response([
@@ -64,11 +37,21 @@ class UserController extends Controller
         }
         $user->tokens()->delete();
 
-        $token = $user->createToken('access-token', ['user'])->plainTextToken;
+        $token = $user->is_admin ? $user->createToken('access-token', ['user', 'admin'])->plainTextToken : $user->createToken('access-token', ['user'])->plainTextToken;
 
         return response([
             'user' => $user,
             'token' => $token
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find($request->id);
+        $request->validate([
+            'name' => 'required|string',
+            'username' => ['required', Rule::unique('cameras')->ignore($user->id),'max:255'],
+            'password' => 'required|string|confirmed'
         ]);
     }
 
@@ -96,52 +79,56 @@ class UserController extends Controller
         ]);
     }
 
-    public function forgot_password(Request $request)
+    public function admin_list_users(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
-
-        return response([
-            'status' => $status
-        ]);
+        $users = User::all();
+        return response($users);
     }
 
-    public function reset_password_form($token)
+    public function admin_create_users(Request $request)
     {
-        return view('auth.reset-password', ['token' => $token]);
-    }
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
 
-    public function reset_password(Request $request)
-    {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'name' => 'required|string',
+            'username' => 'required|max:255|unique:users',
+            'password' => ['required', 'string', 'confirmed', Password::min(8)]
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => bcrypt($password)
-                ]);
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => bcrypt($request->password)
+        ]);
 
-                $user->save();
-                $user->tokens()->delete();
-            }
-        );
-
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        return response($user);
     }
 
+    public function admin_delete_users(Request $request, $id)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        if ($id == $request->user()->id) {
+            return response([
+                'message' => 'Cannot delete yourself'
+            ], 403);
+        }
+
+        return User::destroy($id);
+    }
 
 }

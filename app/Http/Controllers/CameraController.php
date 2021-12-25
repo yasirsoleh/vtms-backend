@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CameraCollection;
 use Illuminate\Http\Request;
 use App\Models\Camera;
 use Illuminate\Validation\Rule;
@@ -15,17 +16,8 @@ class CameraController extends Controller
      */
     public function index()
     {
-        return Camera::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new CameraCollection(Camera::paginate());
+        //return Camera::paginate();
     }
 
     /**
@@ -36,6 +28,12 @@ class CameraController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->user()->admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'traffic_direction' => 'required',
@@ -50,8 +48,6 @@ class CameraController extends Controller
         $camera->save();
 
         return response($camera);
-
-        // return $camera;
     }
 
     /**
@@ -67,17 +63,6 @@ class CameraController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -86,11 +71,16 @@ class CameraController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!$request->user()->admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
         $camera = Camera::find($id);
 
         $request->validate([
             'name' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:255'],
-            //'mqtt_topic' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:30'],
             'traffic_direction' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
@@ -106,8 +96,14 @@ class CameraController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        if (!$request->user()->admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
         return Camera::destroy($id);
     }
 

@@ -6,6 +6,7 @@ use App\Models\Detection;
 use App\Models\Camera;
 use Illuminate\Http\Request;
 use App\Events\NewDetections;
+use App\Http\Resources\DetectionCollection;
 
 class DetectionController extends Controller
 {
@@ -16,17 +17,8 @@ class DetectionController extends Controller
      */
     public function index()
     {
-        return Detection::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new DetectionCollection(Detection::orderByDesc('created_at')->cursorPaginate(15));
+        //return Detection::paginate(10);
     }
 
     /**
@@ -62,29 +54,6 @@ class DetectionController extends Controller
     public function show($id)
     {
         return Detection::find($id);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**

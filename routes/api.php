@@ -15,14 +15,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//authenticated route
+
+//authenticated route for user
 Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     //Cameras
     Route::get('/cameras', [CameraController::class, 'index']);
-    Route::post('/cameras', [CameraController::class, 'store']);
     Route::get('/cameras/{camera}', [CameraController::class, 'show']);
-    Route::delete('/cameras/{camera}', [CameraController::class, 'destroy']);
-    Route::put('/cameras/{camera}', [CameraController::class, 'update']);
     Route::get('/cameras/search/{name}', [CameraController::class, 'search_name']);
 
     //Detections
@@ -34,17 +32,25 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     //User
     Route::post('/user/change_password', [UserController::class, 'change_password']);
     Route::get('/user/logout',[UserController::class, 'logout']);
-    Route::get('/users',[UserController::class, 'index']);
+    Route::get('/user',[UserController::class, 'index']);
 });
 
+Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function (){
+    //Admin Manage Cameras
+    Route::post('/cameras', [CameraController::class, 'store']);
+    Route::delete('/cameras/{camera}', [CameraController::class, 'destroy']);
+    Route::put('/cameras/{camera}', [CameraController::class, 'update']);
+
+    //Admin Manage Users
+    Route::delete('/admin/users/{user}', [UserController::class, 'admin_delete_users']);
+    Route::post('/admin/users/', [UserController::class, 'admin_create_users']);
+
+});
+
+//Only camera can poauthenticatedst detections
 Route::middleware(['auth:sanctum', 'abilities:camera'])->group(function () {
     Route::post('/detections', [DetectionController::class, 'store']);
 });
 
-
 //User-not authenticated
-Route::post('/user/register',[UserController::class, 'register']);
 Route::post('/user/login', [UserController::class, 'login']);
-
-//Reset Password
-Route::post('/forgot-password', [UserController::class, 'forgot_password']);
