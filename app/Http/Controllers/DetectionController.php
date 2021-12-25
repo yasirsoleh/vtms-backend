@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Detection;
 use App\Models\Camera;
 use Illuminate\Http\Request;
+use App\Events\NewDetections;
+use App\Http\Resources\DetectionCollection;
 
 class DetectionController extends Controller
 {
@@ -15,17 +17,8 @@ class DetectionController extends Controller
      */
     public function index()
     {
-        return Detection::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new DetectionCollection(Detection::orderByDesc('created_at')->cursorPaginate(15));
+        //return Detection::paginate(10);
     }
 
     /**
@@ -36,23 +29,20 @@ class DetectionController extends Controller
      */
     public function store(Request $request)
     {
+        $camera = $request->user();
         $request->validate([
-            'camera_id' => 'exists:App\Models\Camera,id',
+            //'camera_id' => 'exists:App\Models\Camera,id',
             'plate_number' => 'required|string',
         ]);
 
-        $detection = Detection::create($request->all());
-
-        return $detection;
-    }
-
-    public function store_from_mqtt($mqtt_topic, $data)
-    {
-        $camera = Camera::firstWhere('mqtt_topic', $mqtt_topic);
         $detection = Detection::create([
             'camera_id' => $camera->id,
-            'plate_number' => $data->plate_number,
+            'plate_number' => $request->plate_number,
         ]);
+
+        event(new NewDetections($detection));
+
+        return $detection;
     }
 
     /**
@@ -64,29 +54,6 @@ class DetectionController extends Controller
     public function show($id)
     {
         return Detection::find($id);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
 {
@@ -16,45 +17,18 @@ class UserController extends Controller
     */
     public function index(Request $request)
     {
-        if (!$request->user()->admin) {
-            return response([
-                'message' => 'Not Admin'
-            ], 403);
-        }
-
-        $users = User::all();
-        return response($users);
-    }
-
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|confirmed'
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        $token = $user->createToken('access-token')->plainTextToken;
-
-        return response([
-            'token' => $token
-        ]);
+        $user = $request->user();
+        return response($user);
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|max:255',
             'password' => 'required|string'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('username', $request->username)->first();
 
         if (!$user || !Hash::check($request->password, $user->password) ) {
             return response([
@@ -63,11 +37,21 @@ class UserController extends Controller
         }
         $user->tokens()->delete();
 
-        $token = $user->createToken('access-token')->plainTextToken;
+        $token = $user->is_admin ? $user->createToken('access-token', ['user', 'admin'])->plainTextToken : $user->createToken('access-token', ['user'])->plainTextToken;
 
         return response([
             'user' => $user,
             'token' => $token
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find($request->id);
+        $request->validate([
+            'name' => 'required|string',
+            'username' => ['required', Rule::unique('cameras')->ignore($user->id),'max:255'],
+            'password' => 'required|string|confirmed'
         ]);
     }
 
@@ -94,4 +78,78 @@ class UserController extends Controller
             'message' => 'Password Changed'
         ]);
     }
+
+    public function user_revoke_all_tokens(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response([
+            'message' => 'Tokens Deleted'
+        ]);
+    }
+
+    public function admin_list_users(Request $request)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        $users = User::all();
+        return response($users);
+    }
+
+    public function admin_create_users(Request $request)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        $request->validate([
+            'name' => 'required|string',
+            'username' => 'required|max:255|unique:users',
+            'password' => ['required', 'string', 'confirmed', Password::min(8)]
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return response($user);
+    }
+
+    public function admin_delete_users(Request $request, $id)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        if ($id == $request->user()->id) {
+            return response([
+                'message' => 'Cannot delete yourself'
+            ], 403);
+        }
+
+        return User::destroy($id);
+    }
+
+    public function admin_revoke_users_token(Request $request, $id)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        $user = User::find($id);
+        return $user->tokens()->delete();
+    }
+
 }

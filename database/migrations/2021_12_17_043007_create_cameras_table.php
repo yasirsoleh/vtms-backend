@@ -16,7 +16,7 @@ class CreateCamerasTable extends Migration
         Schema::create('cameras', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('mqtt_topic');
+            $table->string('plain_text_token')->nullable();
             $table->enum('traffic_direction',['inbound','outbound']);
             $table->string('latitude');
             $table->string('longitude');

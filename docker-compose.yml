@@ -41,9 +41,40 @@ services:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
             timeout: 5s
+    soketi:
+        image: 'quay.io/soketi/soketi:latest-16-alpine'
+        environment:
+            DEBUG: '1'
+            METRICS_SERVER_PORT: '9601'
+        ports:
+            - '${SOKETI_PORT:-6001}:6001'
+            - '${SOKETI_METRICS_SERVER_PORT:-9601}:9601'
+        networks:
+            - sail
+    nodejs:
+        image: 'node:16-alpine'
+        user: 'node'
+        environment:
+            - NODE_ENV=production
+        volumes:
+            - './mqtt_http_bridge:/home/node/mqtt_http_bridge'
+        working_dir: '/home/node/mqtt_http_bridge'
+        command: 'node index.js'
+        networks:
+            - sail
+    mosquitto:
+        image: 'eclipse-mosquitto:latest'
+        volumes:
+          - './mosquitto.conf:/mosquitto/config/mosquitto.conf'
+        ports:
+          - 1883:1883
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
 volumes:
     sailmariadb:
+        driver: local
+    sailredis:
         driver: local
