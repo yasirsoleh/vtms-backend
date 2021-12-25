@@ -33,6 +33,9 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     Route::post('/user/change_password', [UserController::class, 'change_password']);
     Route::get('/user/logout',[UserController::class, 'logout']);
     Route::get('/user',[UserController::class, 'index']);
+
+    //User manage token
+    Route::get('/user/revoke_tokens',[UserController::class, 'user_revoke_all_tokens']);
 });
 
 Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function (){
@@ -42,9 +45,9 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function (){
     Route::put('/cameras/{camera}', [CameraController::class, 'update']);
 
     //Admin Manage Users
+    Route::get('/admin/users/{user}/revoke_token', [UserController::class, 'admin_revoke_users_token']);
     Route::delete('/admin/users/{user}', [UserController::class, 'admin_delete_users']);
     Route::post('/admin/users/', [UserController::class, 'admin_create_users']);
-
 });
 
 //Only camera can poauthenticatedst detections

@@ -79,6 +79,15 @@ class UserController extends Controller
         ]);
     }
 
+    public function user_revoke_all_tokens(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response([
+            'message' => 'Tokens Deleted'
+        ]);
+    }
+
     public function admin_list_users(Request $request)
     {
         if (!$request->user()->is_admin) {
@@ -129,6 +138,18 @@ class UserController extends Controller
         }
 
         return User::destroy($id);
+    }
+
+    public function admin_revoke_users_token(Request $request, $id)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        $user = User::find($id);
+        return $user->tokens()->delete();
     }
 
 }
