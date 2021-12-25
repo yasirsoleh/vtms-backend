@@ -41,57 +41,9 @@ DB_PASSWORD=password
 ```
 #### 7. Run migration
 ```
-./vendor/bin/sail artisan migrate:fresh
+./vendor/bin/sail artisan migrate:fresh --seed
 ```
-#### 8. Run database seeder
-```
-./vendor/bin/sail artisan db:seed
-```
-#### 9. Open browser and go to localhost
+#### 8. Open browser and go to localhost
 ```
 http://localhost
-```
-
-### Using XAMPP
-Make sure [git](https://git-scm.com/), [XAMPP  (version 8 or above)](https://www.apachefriends.org/download.html), [Composer](https://getcomposer.org/download/), and [Node.js](https://nodejs.org/en/download/) is installed before starting.
-#### 0. Clone the repository
-```
-git clone git@github.com:yasirsoleh/vtms_backend.git
-```
-#### 1. Make sure to be inside the directory
-```
-cd vtms_backend
-```
-#### 2. Composer install dependencies
-```
-composer install
-```
-#### 3. Install node dependencies
-```
-npm install
-npm run dev
-```
-#### 4. Prepare .env
-```
-cp .env.example .env
-```
-#### 5. Create new database in phpmyadmin with the name
-```
-dcrsms
-```
-#### 6. Run migration
-```
-php artisan migrate:fresh
-```
-#### 7. Run database seeder
-```
-php artisan db:seed
-```
-#### 8. Serve the app
-```
-php artisan serve
-```
-#### 9. Open browser and go to localhost
-```
-http://localhost:8000
 ```
