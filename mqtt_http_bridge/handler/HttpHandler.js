@@ -1,7 +1,7 @@
 const http = require('http');
 
 const options = {
-    host: 'laravel.test',
+    host: 'vtms_backend.test',
     path: '/api/detections',
     method: 'POST',
     headers: {
