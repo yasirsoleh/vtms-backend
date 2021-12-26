@@ -18,6 +18,10 @@ class Camera extends Model
         'longitude',
     ];
 
+    protected $hidden = [
+        'plain_text_token'
+    ];
+
     public function detections()
     {
         return $this->hasMany(Detection::class)->withDefault();

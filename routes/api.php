@@ -16,49 +16,37 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::post('/users/login', [UserController::class, 'login']);
 
-//authenticated route for user
 Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
-    //Cameras
+    Route::get('/users/logout',[UserController::class, 'logout']);
+    Route::get('/users',[UserController::class, 'index']);
+    Route::put('/users',[UserController::class, 'update']);
+    Route::get('/users/revoke_tokens',[UserController::class, 'revoke_tokens']);
+    Route::post('/users/change_password', [UserController::class, 'change_password']);
+
     Route::get('/cameras', [CameraController::class, 'index']);
     Route::get('/cameras/{camera}', [CameraController::class, 'show']);
     Route::get('/cameras/search/{name}', [CameraController::class, 'search_name']);
 
-    //Detections
     Route::get('/detections', [DetectionController::class, 'index']);
     Route::get('/detections/{detection}', [DetectionController::class, 'show']);
-    Route::delete('/detections/{detection}', [DetectionController::class, 'destroy']);
-    Route::get('/detections/search/{plate_number}', [DetectionController::class, 'search_plate_number']);
-
-    //Routes
-    Route::get('/routes',[RouteController::class, 'index']);
-    Route::get('/routes/{plate_number}',[RouteController::class, 'show']);
-
-    //User
-    Route::post('/user/change_password', [UserController::class, 'change_password']);
-    Route::get('/user/logout',[UserController::class, 'logout']);
-    Route::get('/user',[UserController::class, 'index']);
-
-    //User manage token
-    Route::get('/user/revoke_tokens',[UserController::class, 'user_revoke_all_tokens']);
+    Route::get('/detections/plate_numbers',[DetectionController::class, 'plate_numbers']);
+    Route::get('/detections/plate_numbers/{plate_number}',[DetectionController::class, 'show_plate_numbers']);
+    Route::get('/detections/plate_numbers/search/{plate_number}', [DetectionController::class, 'search_plate_numbers']);
 });
 
 Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function (){
-    //Admin Manage Cameras
+    Route::get('/users/list', [UserController::class, 'admin_list_users']);
+    Route::get('/users/{user}/revoke_token', [UserController::class, 'admin_revoke_users_token']);
+    Route::delete('/users/{user}', [UserController::class, 'admin_delete_users']);
+    Route::post('/users', [UserController::class, 'admin_create_users']);
+
     Route::post('/cameras', [CameraController::class, 'store']);
     Route::delete('/cameras/{camera}', [CameraController::class, 'destroy']);
     Route::put('/cameras/{camera}', [CameraController::class, 'update']);
-
-    //Admin Manage Users
-    Route::get('/admin/users/{user}/revoke_token', [UserController::class, 'admin_revoke_users_token']);
-    Route::delete('/admin/users/{user}', [UserController::class, 'admin_delete_users']);
-    Route::post('/admin/users/', [UserController::class, 'admin_create_users']);
 });
 
-//Only camera can poauthenticatedst detections
 Route::middleware(['auth:sanctum', 'abilities:camera'])->group(function () {
     Route::post('/detections', [DetectionController::class, 'store']);
 });
-
-//User-not authenticated
-Route::post('/user/login', [UserController::class, 'login']);

@@ -6,19 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
     public function index(Request $request)
     {
         $user = $request->user();
-        return response($user);
+        return $user;
     }
 
     public function login(Request $request)
@@ -32,7 +27,7 @@ class UserController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password) ) {
             return response([
-                'message' => 'Bad credentials'
+                'message' => 'Bad Credentials'
             ]);
         }
         $user->tokens()->delete();
@@ -47,12 +42,22 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = User::find($request->id);
+        $user = $request->user();
         $request->validate([
             'name' => 'required|string',
-            'username' => ['required', Rule::unique('cameras')->ignore($user->id),'max:255'],
-            'password' => 'required|string|confirmed'
+            'username' => ['required', Rule::unique('users')->ignore($user->id),'max:255']
         ]);
+
+        $user->update([
+            'name' => $request->name,
+            'username' => $request->username
+        ]);
+
+        return response([
+            'message' => 'User Updated',
+            'user' => $user
+        ]);
+
     }
 
     public function logout(Request $request)
@@ -67,7 +72,7 @@ class UserController extends Controller
     public function change_password(Request $request)
     {
         $request->validate([
-            'password' => 'required|string|confirmed'
+            'password' => ['required', 'confirmed', Password::min(8)]
         ]);
 
         $user = $request->user();
@@ -79,7 +84,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function user_revoke_all_tokens(Request $request)
+    public function revoke_tokens(Request $request)
     {
         $request->user()->tokens()->delete();
 
@@ -96,8 +101,7 @@ class UserController extends Controller
             ], 403);
         }
 
-        $users = User::all();
-        return response($users);
+        return User::paginate();
     }
 
     public function admin_create_users(Request $request)
@@ -120,7 +124,10 @@ class UserController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        return response($user);
+        return response([
+            'message' => 'User Created',
+            'user' => $user
+        ]);
     }
 
     public function admin_delete_users(Request $request, $id)
@@ -133,11 +140,19 @@ class UserController extends Controller
 
         if ($id == $request->user()->id) {
             return response([
-                'message' => 'Cannot delete yourself'
+                'message' => 'Cannot Delete Yourself'
             ], 403);
         }
 
-        return User::destroy($id);
+        if (User::destroy($id)) {
+            return response([
+                'message' => 'User Deleted'
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Not Found'
+        ], 404);
     }
 
     public function admin_revoke_users_token(Request $request, $id)
@@ -149,7 +164,20 @@ class UserController extends Controller
         }
 
         $user = User::find($id);
-        return $user->tokens()->delete();
-    }
+        if (!$user) {
+            return response([
+                'message' => 'Not Found'
+            ], 404);
+        }
 
+        if ($user->tokens()->delete()) {
+            return response([
+                'message' => 'Tokens Deleted'
+            ]);
+        }
+
+        return response([
+            'message' => 'Not Found'
+        ], 404);
+    }
 }

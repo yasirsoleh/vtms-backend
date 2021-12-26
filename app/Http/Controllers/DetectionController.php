@@ -8,70 +8,61 @@ use App\Events\NewDetections;
 
 class DetectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        return Detection::orderByDesc('created_at')->cursorPaginate(15);
+        return Detection::orderByDesc('created_at')->cursorPaginate();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $camera = $request->user();
-        $request->validate([
-            //'camera_id' => 'exists:App\Models\Camera,id',
-            'plate_number' => 'required|string',
-        ]);
 
-        $detection = Detection::create([
-            'camera_id' => $camera->id,
-            'plate_number' => $request->plate_number,
-        ]);
+        if ($camera->tokenCan('camera')) {
+            $request->validate([
+                'plate_number' => 'required|string',
+            ]);
 
-        event(new NewDetections($detection));
+            $detection = Detection::create([
+                'camera_id' => $camera->id,
+                'plate_number' => $request->plate_number,
+            ]);
 
-        return $detection;
+            event(new NewDetections($detection));
+            return response();
+        }
+
+        return response([
+            'message' => 'Invalid Token'
+        ], 403);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        return Detection::find($id);
+        $detection = Detection::where('id', $id)->with('camera')->get();
+
+        if ($detection->isEmpty()) {
+            return response([
+                'message' => 'Not Found'
+            ], 404);
+        }
+
+        return response([
+            'detection' => $detection
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function search_plate_numbers($plate_number)
     {
-        return Detection::destroy($id);
+        return Detection::where('plate_number','like', '%'.$plate_number.'%')->cursorPaginate();
     }
 
-    /**
-     * Search for plate number.
-     *
-     * @param  str  $name
-     * @return \Illuminate\Http\Response
-     */
-    public function search_plate_number($plate_number)
+    public function plate_numbers()
     {
-        return Detection::where('plate_number','like', '%'.$plate_number.'%')->get();
+        return Detection::distinct('plate_number')->cursorPaginate();
+    }
+
+    public function show_plate_numbers($plate_number)
+    {
+        return Detection::where('plate_number', $plate_number)->with('camera')->get();
     }
 }
