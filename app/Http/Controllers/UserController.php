@@ -130,7 +130,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function admin_delete_users(Request $request, $id)
+    public function admin_delete_user(Request $request, $id)
     {
         if (!$request->user()->is_admin) {
             return response([
@@ -155,7 +155,7 @@ class UserController extends Controller
         ], 404);
     }
 
-    public function admin_revoke_users_token(Request $request, $id)
+    public function admin_revoke_user_tokens(Request $request, $id)
     {
         if (!$request->user()->is_admin) {
             return response([
@@ -177,7 +177,7 @@ class UserController extends Controller
         }
 
         return response([
-            'message' => 'Not Found'
+            'message' => 'No Tokens Found'
         ], 404);
     }
 }
