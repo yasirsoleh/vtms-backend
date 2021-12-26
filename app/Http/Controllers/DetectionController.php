@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Detection;
-use App\Models\Camera;
 use Illuminate\Http\Request;
 use App\Events\NewDetections;
-use App\Http\Resources\DetectionCollection;
 
 class DetectionController extends Controller
 {
@@ -17,8 +15,7 @@ class DetectionController extends Controller
      */
     public function index()
     {
-        return new DetectionCollection(Detection::orderByDesc('created_at')->cursorPaginate(15));
-        //return Detection::paginate(10);
+        return Detection::orderByDesc('created_at')->cursorPaginate(15);
     }
 
     /**

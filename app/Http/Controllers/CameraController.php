@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CameraCollection;
 use Illuminate\Http\Request;
 use App\Models\Camera;
 use Illuminate\Validation\Rule;
@@ -16,8 +15,7 @@ class CameraController extends Controller
      */
     public function index()
     {
-        return new CameraCollection(Camera::paginate());
-        //return Camera::paginate();
+        return Camera::paginate();
     }
 
     /**
@@ -35,7 +33,7 @@ class CameraController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', Rule::unique('cameras'), 'max:255'],
             'traffic_direction' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
@@ -80,7 +78,7 @@ class CameraController extends Controller
         $camera = Camera::find($id);
 
         $request->validate([
-            'name' => ['required', Rule::unique('cameras')->ignore($camera->id),'max:255'],
+            'name' => ['required', Rule::unique('cameras')->ignore($camera->id), 'max:255'],
             'traffic_direction' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',

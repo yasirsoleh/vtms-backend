@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\DetectionController;
+use App\Http\Controllers\RouteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,10 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
     Route::get('/detections/{detection}', [DetectionController::class, 'show']);
     Route::delete('/detections/{detection}', [DetectionController::class, 'destroy']);
     Route::get('/detections/search/{plate_number}', [DetectionController::class, 'search_plate_number']);
+
+    //Routes
+    Route::get('/routes',[RouteController::class, 'index']);
+    Route::get('/routes/{plate_number}',[RouteController::class, 'show']);
 
     //User
     Route::post('/user/change_password', [UserController::class, 'change_password']);
