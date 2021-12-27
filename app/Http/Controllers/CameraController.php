@@ -58,14 +58,14 @@ class CameraController extends Controller
 
         return response([
             'camera' => [
-            'id' => $camera->id,
-            'name' => $camera->name,
-            'plain_text_token' => $camera->plain_text_token,
-            'traffic_direction' => $camera->traffic_direction,
-            'latitude' => $camera->latitude,
-            'longitude' => $camera->longitude,
-            'created_at' => $camera->created_at,
-            'updated_at' => $camera->updated_at
+                'id' => $camera->id,
+                'name' => $camera->name,
+                'plain_text_token' => $camera->plain_text_token,
+                'traffic_direction' => $camera->traffic_direction,
+                'latitude' => $camera->latitude,
+                'longitude' => $camera->longitude,
+                'created_at' => $camera->created_at,
+                'updated_at' => $camera->updated_at
             ]
         ]);
     }
@@ -122,6 +122,6 @@ class CameraController extends Controller
 
     public function search_name($name)
     {
-        return Camera::where('name','like', '%'.$name.'%')->orWhere('mqtt_topic','like','%'.$name.'%')->get();
+        return Camera::where('name','like', '%'.$name.'%')->get();
     }
 }
