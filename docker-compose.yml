@@ -59,7 +59,7 @@ services:
         volumes:
             - './mqtt_http_bridge:/home/node/mqtt_http_bridge'
         working_dir: '/home/node/mqtt_http_bridge'
-        command: 'npm install && node index.js'
+        command: 'node index.js'
         networks:
             - sail
     mosquitto:
