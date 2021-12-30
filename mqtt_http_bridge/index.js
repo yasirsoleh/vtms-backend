@@ -7,7 +7,7 @@ const client = mqtt.connect("mqtt://mosquitto");
     client.subscribe('vtms/detections');
     client.on('message', (topic, payload, packet) => {
         try {
-            setTimeout(post_detections(payload), 0);
+            post_detections(payload);
         } catch(e) {
             console.log("Error");
         }
