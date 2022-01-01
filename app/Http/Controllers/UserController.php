@@ -76,7 +76,7 @@ class UserController extends Controller
         ]);
 
         $user = $request->user();
-        $user->password = bcrypt($request->password);
+        $user->password = Hash::make($request->password);
         $user->save();
 
         return response([
@@ -121,7 +121,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
-            'password' => bcrypt($request->password)
+            'password' => Hash::make($request->password)
         ]);
 
         return response([

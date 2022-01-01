@@ -47,7 +47,7 @@ class DetectionController extends Controller
         }
 
         return response([
-            'detection' => $detection
+            'detection' => $detection->first()
         ]);
     }
 
