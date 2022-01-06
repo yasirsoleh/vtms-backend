@@ -18,18 +18,10 @@ class UserSeeder extends Seeder
         //create admin
         User::create([
             'name' => 'Admin',
-            'username' => 'aaa_aaa',
+            'username' => 'admin_bkes',
             'is_admin' => true,
-            'password' => Hash::make('secretpassword')
+            'password' => Hash::make('password')
         ]);
-
-        User::create([
-            'name' => 'Admin FFFF',
-            'username' => 'werk',
-            'is_admin' => true,
-            'password' => Hash::make('secretpassword')
-        ]);
-
         //create random user
         User::factory()->count(20)->create();
     }
