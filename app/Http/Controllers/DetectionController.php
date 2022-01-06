@@ -10,7 +10,8 @@ class DetectionController extends Controller
 {
     public function index()
     {
-        return Detection::orderByDesc('created_at')->cursorPaginate();
+        //return Detection::orderByDesc('created_at')->cursorPaginate();
+        return Detection::orderByDesc('id')->cursorPaginate();
     }
 
     public function store(Request $request)

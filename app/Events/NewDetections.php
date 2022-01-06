@@ -4,7 +4,6 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -34,11 +33,11 @@ class NewDetections implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new Channel('detection');
+        return new Channel('detections');
     }
 
     public function broadcastAs()
     {
-        return 'new-detections';
+        return 'new-detection';
     }
 }
