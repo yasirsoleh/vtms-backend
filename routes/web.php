@@ -22,5 +22,3 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('welcome');
 })->name('login');
-
-Route::get('/caddy-check', [CaddyController::class, 'check']);
