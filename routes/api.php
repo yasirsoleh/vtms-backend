@@ -38,9 +38,11 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'abilities:admin'])->group(function (){
     Route::get('/users/list', [UserController::class, 'admin_list_users']);
+    Route::get('/users/{user}', [UserController::class, 'admin_view_users']);
+    Route::put('/users/{user}', [UserController::class, 'admin_update_users']);
     Route::get('/users/{user}/revoke_tokens', [UserController::class, 'admin_revoke_user_tokens']);
     Route::delete('/users/{user}', [UserController::class, 'admin_delete_user']);
-    Route::post('/users', [UserController::class, 'admin_create_user']);
+    Route::post('/users', [UserController::class, 'admin_create_users']);
 
     Route::post('/cameras', [CameraController::class, 'store']);
     Route::delete('/cameras/{camera}', [CameraController::class, 'destroy']);

@@ -101,7 +101,37 @@ class UserController extends Controller
             ], 403);
         }
 
-        return User::paginate();
+        return User::cursorPaginate();
+    }
+
+    public function admin_view_users(Request $request, User $user)
+    {
+        if (!$request->user()->is_admin) {
+            return response([
+                'message' => 'Not Admin'
+            ], 403);
+        }
+
+        return $user;
+    }
+
+    public function admin_update_users(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'username' => ['required', Rule::unique('users')->ignore($user->id),'max:255']
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'username' => $request->username
+        ]);
+
+        return response([
+            'message' => 'User Updated',
+            'user' => $user
+        ]);
+
     }
 
     public function admin_create_users(Request $request)

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Detection;
 use Illuminate\Http\Request;
 use App\Events\NewDetections;
+use PHPUnit\Framework\Constraint\IsEmpty;
+
+use function PHPUnit\Framework\isEmpty;
 
 class DetectionController extends Controller
 {
@@ -64,6 +67,12 @@ class DetectionController extends Controller
 
     public function show_plate_numbers($plate_number)
     {
-        return Detection::where('plate_number', $plate_number)->with('camera')->get();
+        $detections = Detection::where('plate_number', $plate_number)->with('camera')->get();
+        if (count($detections) == 0) {
+            return response([
+                'message' => 'Not Found'
+            ], 404);
+        }
+        return $detections;
     }
 }

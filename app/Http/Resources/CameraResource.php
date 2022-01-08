@@ -16,6 +16,7 @@ class CameraResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'plain_text_token' => $this->when(Auth::user()->is_admin, $this->plain_text_token),
             'traffic_direction' => $this->traffic_direction,
