@@ -24,6 +24,6 @@ class Camera extends Model
 
     public function detections()
     {
-        return $this->hasMany(Detection::class)->withDefault();
+        return $this->hasMany(Detection::class);
     }
 }

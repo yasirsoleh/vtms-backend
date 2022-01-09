@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Detection;
 use Illuminate\Http\Request;
 use App\Events\NewDetections;
-use PHPUnit\Framework\Constraint\IsEmpty;
-
-use function PHPUnit\Framework\isEmpty;
+use Carbon\Carbon;
 
 class DetectionController extends Controller
 {
@@ -26,13 +24,25 @@ class DetectionController extends Controller
                 'plate_number' => 'required|string',
             ]);
 
-            $detection = Detection::create([
-                'camera_id' => $camera->id,
-                'plate_number' => $request->plate_number,
-            ]);
+            $stillNew = $camera->detections()->where('plate_number', $request->plate_number)->get()->last();
+            $stillNew = $stillNew['created_at'];
+            $stillNew = Carbon::parse($stillNew);
+            $stillNew = $stillNew->greaterThan(Carbon::now()->subMinutes(1));
+            if (!$stillNew) {
+                $detection = Detection::create([
+                    'camera_id' => $camera->id,
+                    'plate_number' => $request->plate_number,
+                ]);
+                event(new NewDetections($detection));
+                return response([
+                    'message' => 'Detection Created',
+                    'erk' => $stillNew,
+                ]);
+            }
 
-            event(new NewDetections($detection));
-            return response();
+            response([
+                'message' => 'Detection too soon',
+            ], 403);
         }
 
         return response([
