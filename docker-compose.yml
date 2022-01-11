@@ -24,13 +24,6 @@ services:
             - traefik
         depends_on:
             - mariadb
-        labels:
-            # enable traefik and tls using letsencrypt
-            traefik.enable: "true"
-            traefik.http.routers.app.tls: "true"
-            traefik.http.routers.app.tls.certresolver: letsencrypt
-            # serve it on https://app.your-domain.com
-            traefik.http.routers.app.rule: Host(`vtms.online`)
 
     mariadb:
         image: 'mariadb:10'
@@ -79,19 +72,6 @@ services:
           - 1883:1883
         networks:
             - sail
-    traefik:
-        container_name: traefik
-        image: traefik
-        restart: always
-        stdin_open: true
-        tty: true
-        volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - ./traefik.yml:/etc/traefik/traefik.yml
-        - ./acme:/etc/traefik/acme
-        ports:
-        - "80:80"
-        - "443:443"
 networks:
     sail:
         driver: bridge
