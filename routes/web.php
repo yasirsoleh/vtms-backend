@@ -22,3 +22,7 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('welcome');
 })->name('login');
+
+Route::get('/.well-known/acme-challenge/{token}', function (string $token) {
+    return \Illuminate\Support\Facades\Storage::get('public/.well-known/acme-challenge/' . $token);
+});
