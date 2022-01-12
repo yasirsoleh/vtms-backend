@@ -23,11 +23,19 @@ class DetectionController extends Controller
             $request->validate([
                 'plate_number' => 'required|string',
             ]);
+            // $detection = Detection::create([
+            //     'camera_id' => $camera->id,
+            //     'plate_number' => $request->plate_number,
+            // ]);
+            // event(new NewDetections($detection));
+            // return response([
+            //     'message' => 'Detection Created',
+            // ]);
 
             $stillNew = $camera->detections()->where('plate_number', $request->plate_number)->get()->last();
             $stillNew = $stillNew['created_at'];
             $stillNew = Carbon::parse($stillNew);
-            $stillNew = $stillNew->greaterThan(Carbon::now()->subMinutes(1));
+            $stillNew = $stillNew->greaterThan(Carbon::now()->subSeconds(10));
             if (!$stillNew) {
                 $detection = Detection::create([
                     'camera_id' => $camera->id,
