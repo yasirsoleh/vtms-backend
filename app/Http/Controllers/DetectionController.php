@@ -23,19 +23,12 @@ class DetectionController extends Controller
             $request->validate([
                 'plate_number' => 'required|string',
             ]);
-            // $detection = Detection::create([
-            //     'camera_id' => $camera->id,
-            //     'plate_number' => $request->plate_number,
-            // ]);
-            // event(new NewDetections($detection));
-            // return response([
-            //     'message' => 'Detection Created',
-            // ]);
-
             $stillNew = $camera->detections()->where('plate_number', $request->plate_number)->get()->last();
-            $stillNew = $stillNew['created_at'];
-            $stillNew = Carbon::parse($stillNew);
-            $stillNew = $stillNew->greaterThan(Carbon::now()->subSeconds(10));
+            if ($stillNew != null) {
+                $stillNew = $stillNew['created_at'];
+                $stillNew = Carbon::parse($stillNew);
+                $stillNew = $stillNew->greaterThan(Carbon::now()->subSeconds(10));
+            }
             if (!$stillNew) {
                 $detection = Detection::create([
                     'camera_id' => $camera->id,
@@ -44,7 +37,6 @@ class DetectionController extends Controller
                 event(new NewDetections($detection));
                 return response([
                     'message' => 'Detection Created',
-                    'erk' => $stillNew,
                 ]);
             }
 
@@ -80,7 +72,7 @@ class DetectionController extends Controller
 
     public function plate_numbers()
     {
-        return Detection::distinct('plate_number')->cursorPaginate();
+        return Detection::distinct()->orderByDesc('created_at')->pluck('plate_number');
     }
 
     public function show_plate_numbers($plate_number)
