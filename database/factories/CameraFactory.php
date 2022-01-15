@@ -14,7 +14,7 @@ class CameraFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->word(),
+            'name' => $this->faker->cityPrefix().$this->faker->streetSuffix().$this->faker->buildingNumber(),
             'traffic_direction' => $this->faker->randomElement(['inbound', 'outbound']),
             // x1, y1 3.5419187458628683, 103.42440718917268
             // x2, y1 3.548472228191322, 103.43470687181146
