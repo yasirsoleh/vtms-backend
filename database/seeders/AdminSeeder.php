@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class AdminSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,12 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->count(20)->create();
+        //create admin
+        User::create([
+            'name' => 'Admin',
+            'username' => 'admin',
+            'is_admin' => true,
+            'password' => Hash::make('password')
+        ]);
     }
 }
