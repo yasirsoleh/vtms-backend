@@ -30,6 +30,7 @@ Route::middleware(['auth:sanctum', 'abilities:user'])->group(function () {
 
     Route::get('/detections', [DetectionController::class, 'index']);
     Route::get('/detections/{detection}', [DetectionController::class, 'show']);
+    Route::get('/detections/search/{detection}', [DetectionController::class, 'search_detection']);
     Route::get('/detections/plate_numbers/list',[DetectionController::class, 'plate_numbers']);
     Route::get('/detections/plate_numbers/show/{plate_number}',[DetectionController::class, 'show_plate_numbers']);
     Route::get('/detections/plate_numbers/search/{plate_number}', [DetectionController::class, 'search_plate_numbers']);

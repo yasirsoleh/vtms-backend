@@ -65,9 +65,14 @@ class DetectionController extends Controller
         ]);
     }
 
+    public function search_detection($detection)
+    {
+        return Detection::where('plate_number','like', '%'.$detection.'%')->get();
+    }
+
     public function search_plate_numbers($plate_number)
     {
-        return Detection::where('plate_number','like', '%'.$plate_number.'%')->cursorPaginate();
+        return Detection::distinct()->where('plate_number','like', '%'.$plate_number.'%')->pluck('plate_number');
     }
 
     public function plate_numbers()
