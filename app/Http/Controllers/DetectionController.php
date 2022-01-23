@@ -40,7 +40,7 @@ class DetectionController extends Controller
                 ]);
             }
 
-            response([
+            return response([
                 'message' => 'Detection too soon',
             ], 403);
         }
