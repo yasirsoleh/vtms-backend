@@ -1,6 +1,5 @@
 # vtms_backend
 ## How to run
-There is two way to run, using [Laravel Sail](#using-laravel-sail) or [XAMPP](#using-xampp). Follow the instructions accordingly.
 ### Using Laravel Sail 
 Make sure [git](https://git-scm.com/), [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install), and [Docker](https://www.docker.com/products/docker-desktop) is installed before starting.
 #### 0. Clone the repository
